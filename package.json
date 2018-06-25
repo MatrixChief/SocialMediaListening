@@ -1,0 +1,25 @@
+{
+  "name": "social_media_listening",
+  "version": "1.0.0",
+  "description": "read information off of social media platforms and save posts basd on certain criteria",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatrixChief/SocialMediaListening.git"
+  },
+  "author": "Rishabh Nigam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatrixChief/SocialMediaListening/issues"
+  },
+  "homepage": "https://github.com/MatrixChief/SocialMediaListening#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.1.6",
+    "twit": "^2.2.10"
+  }
+}
