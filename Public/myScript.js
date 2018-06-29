@@ -1,11 +1,11 @@
 //send keyword to server for twitter search
 $(document).on('click','#submitBtnT',function(){
     $.ajax({
-        url: "http://localhost:8080/sendKeywordT?key="+$('input[type=text][name=keyword]').val(),
+        url: "http://localhost:8080/sendKeywordT?key="+$('input[type=text][name=keyword]').val()+"&count="+$('input[type=text][name=count]').val(),
         type: "post",
-        data: JSON.stringify({key: $('input[type=text][name=keyword]').val()}),
+        data: JSON.stringify({key: $('input[type=text][name=keyword]').val(), count: $('input[type=text][name=count]')}),
         success: function(result){
-            console.log(result);
+            alert(result);
             window.location.href='/chooseGetter';
         }
     });
@@ -40,11 +40,10 @@ $(document).on('click','#sendGetter',function(){
         type: "post",
         data: JSON.stringify({key: $('#select').val()}),
         success: function(resultArray){
-            var html = '<tr><th>Id</th><th>Post</th></tr>';
+            var html = '<tr><th>User Name</th><th>Location</th><th>Language</th><th>Post</th></tr>';
             for(var i = 0; i < resultArray.length; i++){
-                html+='<tr><td>'+resultArray[i]['user_id']+"</td><td>"+resultArray[i]['post']+"</td></tr>";
+                html+='<tr><td>'+resultArray[i]['user_name']+"</td><td>"+resultArray[i]['location']+"</td><td>"+resultArray[i]['language']+"</td><td>"+resultArray[i]['post']+"</td></tr>";
             }
-            console.log(html);
             $('#posts').html(html);
         }
     })

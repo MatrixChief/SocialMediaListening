@@ -2,14 +2,19 @@ var express = require('express');
 var app = express();
 var port = 8080;
 var mongoose = require('mongoose');
-var MongoClient = require('mongodb').MongoClient;
-var Twit = require('twit');
+var Twit = require('twit-promise');
 var Twit_config = require('./Config/Twit_config');
 var T = new Twit(Twit_config);
+// var FB = require('facebook-node')
 
 var twitterSchema = new mongoose.Schema({
     user_id: String,
-    post: String
+    user_name: String,
+    user_screenName: String,
+    location: String,
+    language: String,
+    post: String,
+    // raw_data: Mixed,
 });
 // var facebookSchema = new mongoose.Schema({
 //     user_id: String,
@@ -26,27 +31,31 @@ app.use("/Public",express.static(__dirname+"/Public"));
 
 app.post("/sendKeywordT", (req, res) => {
     var keyword = req.query.key;
-    var params = {
-        q:keyword,
-        lang:'en',
-        count: 100
-    }
-    var newUser = new Array();
-    var newPost = new Array();
+    var count = req.query.count;
 
-    T.get('search/tweets', params, function(err, data, response) {
+    T.get('search/tweets', {q: keyword, count: count}, function(err, data, response) {
         if(err) throw err;
         else{
-            // console.log(data);
+            // for(var i in data.statuses){
+            //     if(data.statuses[i].truncated==true){
+            //         console.log(data.statuses[i]);
+            //     }
+            // }
+            // console.log(data.statuses);
+            // res.send("Items saved!");
             for(var i in data.statuses){
-                newUser.push(data.statuses[i].id_str);
-                newPost.push(data.statuses[i].text);
-            }
-            for(var i=0; i<newUser.length; i++){
-                var myData=new TUser({user_id: newUser[i], post: newPost[i]});
+                var params = {
+                    user_id: data.statuses[i].user.id_str,
+                    user_name: data.statuses[i].user.name,
+                    user_screenName: data.statuses[i].user.screen_name,
+                    location: data.statuses[i].user.location,
+                    language: data.statuses[i].metadata.iso_language_code,
+                    post: data.statuses[i].text
+                };
+                var myData=new TUser(params);
                 myData.save()
                     .then(item => {
-                        res.send("item saved to database");
+                        res.send("items saved!");
                     });
             };
         };
@@ -56,14 +65,11 @@ app.post("/sendKeywordT", (req, res) => {
 app.post("/sendGetter",(req,res)=>{
     var platform = req.query.key;
     if(platform=="Twitter"){
-        TUser.find({}, {_id: 0,user_id: 1, post: 1}, function(err, result){
+        TUser.find({}, {_id: 0,user_id: 1, user_name: 1, location: 1, language: 1, post: 1}, function(err, result){
             if(err) throw err;
             res.send(result);
         })
     }
-    // else{
-    //
-    // }
 })
 ////////////////////////////////////////////////////////////////////////////////
 app.get("/twitterSearch", (req, res) => {
