@@ -4,19 +4,34 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <title>SocialMediaListener</title>
         <script src="./Public/myScript.js"></script>
-        <!-- <link rel="stylesheet" type="text/css" href="./Public/myStyle.css"> -->
+        <style>
+            table{
+                border-collapse: collapse;
+            }
+            td{
+                padding: 4px;
+            }
+            table, th, td{
+                border: 1px solid black;
+
+            }
+        </style>
     </head>
 
     <body>
-        <h1>Welcome to the social media storage service!</h1>
-        <label>Choose which platform to search on:</label>
+        <h1>Welcome to the Twitter Storage page!</h1>
+        <label>Enter keyword to help our search engine:</label>
         <br>
-        <select id='select_1'>
-            <option value="Twitter">Twitter</option>
-            <option value="Facebook">Facebook</option>
-        </select>
+        <input type="text" name="keyword" placeholder="eg footall" required>
+        <br>
+        <label>Eneter tweet count:</label>
+        <br>
+        <input type="text" name="count" value="1" required>
         <br>
         <br>
-        <button id="sendSelect">Submit</button>
+        <button id="submitBtnT">Submit</button>
+        <table id="posts">
+
+        </table>
     </body>
 </html>

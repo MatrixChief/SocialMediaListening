@@ -5,23 +5,18 @@ var mongoose = require('mongoose');
 var Twit = require('twit-promise');
 var Twit_config = require('./Config/Twit_config');
 var T = new Twit(Twit_config);
-// var FB = require('facebook-node')
 
 var twitterSchema = new mongoose.Schema({
+    user_index: Number,
     user_id: String,
     user_name: String,
     user_screenName: String,
     location: String,
     language: String,
-    post: String,
-    // raw_data: Mixed,
+    post: String
 });
-// var facebookSchema = new mongoose.Schema({
-//     user_id: String,
-//     post: String
-// });
+
 var TUser= mongoose.model('Twitter', twitterSchema);
-// var FUser = mongoose.model('Facebook', facebookSchema);
 
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost:27017/SocialMediaListen");
@@ -33,59 +28,120 @@ app.post("/sendKeywordT", (req, res) => {
     var keyword = req.query.key;
     var count = req.query.count;
 
-    T.get('search/tweets', {q: keyword, count: count}, function(err, data, response) {
-        if(err) throw err;
-        else{
-            // for(var i in data.statuses){
-            //     if(data.statuses[i].truncated==true){
-            //         console.log(data.statuses[i]);
-            //     }
-            // }
-            // console.log(data.statuses);
-            // res.send("Items saved!");
-            for(var i in data.statuses){
-                var params = {
-                    user_id: data.statuses[i].user.id_str,
-                    user_name: data.statuses[i].user.name,
-                    user_screenName: data.statuses[i].user.screen_name,
-                    location: data.statuses[i].user.location,
-                    language: data.statuses[i].metadata.iso_language_code,
-                    post: data.statuses[i].text
+    if(count>100 && count%100==0){
+        for(var i=0; i<count/100; i++){
+            T.get('search/tweets', {q: keyword, count: 100}, function(err, data, response) {
+                if(err) throw err;
+                else{
+                    var j=0;
+                    for(var i in data.statuses){
+                        j++;
+                        var params = {
+                            user_index: j,
+                            user_id: data.statuses[i].user.id_str,
+                            user_name: data.statuses[i].user.name,
+                            user_screenName: data.statuses[i].user.screen_name,
+                            location: data.statuses[i].user.location,
+                            language: data.statuses[i].metadata.iso_language_code,
+                            post: data.statuses[i].text
+                        };
+                        var myData=new TUser(params);
+                        myData.save()
+                            .then(item => {
+                                res.send("Items saved!");
+                            });
+                    };
                 };
-                var myData=new TUser(params);
-                myData.save()
-                    .then(item => {
-                        res.send("items saved!");
-                    });
-            };
+            });
         };
-    });
+    }
+    else if(count>100 && count%100!=0){
+        for(var i=0; i<(count/100>>0); i++){
+            T.get('search/tweets', {q: keyword, count: 100}, function(err, data, response) {
+                if(err) throw err;
+                else{
+                    var j=0;
+                    for(var i in data.statuses){
+                        j++;
+                        var params = {
+                            user_index: j,
+                            user_id: data.statuses[i].user.id_str,
+                            user_name: data.statuses[i].user.name,
+                            user_screenName: data.statuses[i].user.screen_name,
+                            location: data.statuses[i].user.location,
+                            language: data.statuses[i].metadata.iso_language_code,
+                            post: data.statuses[i].text
+                        };
+                        var myData=new TUser(params);
+                        myData.save()
+                            .then(item => {
+                                res.send("Items saved!");
+                            });
+                    };
+                };
+            });
+        };
+        T.get('search/tweets', {q: keyword, count: count%100}, function(err, data, response) {
+            if(err) throw err;
+            else{
+                var j=0;
+                for(var i in data.statuses){
+                    j++;
+                    var params = {
+                        user_index: j,
+                        user_id: data.statuses[i].user.id_str,
+                        user_name: data.statuses[i].user.name,
+                        user_screenName: data.statuses[i].user.screen_name,
+                        location: data.statuses[i].user.location,
+                        language: data.statuses[i].metadata.iso_language_code,
+                        post: data.statuses[i].text
+                    };
+                    var myData=new TUser(params);
+                    myData.save()
+                        .then(item => {
+                            res.send("Items saved!");
+                        });
+                };
+            };
+        });
+    }
+    else{
+        T.get('search/tweets', {q: keyword, count: count}, function(err, data, response) {
+            if(err) throw err;
+            else{
+                var j=0;
+                for(var i in data.statuses){
+                    j++;
+                    var params = {
+                        user_index: j,
+                        user_id: data.statuses[i].user.id_str,
+                        user_name: data.statuses[i].user.name,
+                        user_screenName: data.statuses[i].user.screen_name,
+                        location: data.statuses[i].user.location,
+                        language: data.statuses[i].metadata.iso_language_code,
+                        post: data.statuses[i].text
+                    };
+                    var myData=new TUser(params);
+                    myData.save()
+                        .then(item => {
+                            res.send("Items saved!");
+                        });
+                };
+            };
+        });
+    };
 });
 
 app.post("/sendGetter",(req,res)=>{
-    var platform = req.query.key;
-    if(platform=="Twitter"){
-        TUser.find({}, {_id: 0,user_id: 1, user_name: 1, location: 1, language: 1, post: 1}, function(err, result){
-            if(err) throw err;
-            res.send(result);
-        })
-    }
+    TUser.find({}, {_id: 0,user_index: 1, user_id: 1, user_name: 1, location: 1, language: 1, post: 1}, function(err, result){
+        if(err) throw err;
+        res.send(result);
+    }).sort({user_index: 1});
 })
 ////////////////////////////////////////////////////////////////////////////////
-app.get("/twitterSearch", (req, res) => {
-    res.sendFile(__dirname + "/View/twitterSearch.html");
-});
-app.get("/facebookSearch", (req,res) => {
-    res.sendFile(__dirname + "/View/facebookSearch.html");
-});
-app.get("/chooseGetter", (req, res) => {
-    res.sendFile(__dirname + "/View/chooseGetter.html");
-});
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
-
-
 
 app.listen(port, () => {
     console.log("Server listening on port " + port);
