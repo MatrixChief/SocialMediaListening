@@ -1,23 +1,45 @@
-//send keyword to server for twitter search
-$(document).on('click','#submitBtnT',function(){
-    $.ajax({
-        url: "http://localhost:8080/sendKeywordT?key="+$('input[type=text][name=keyword]').val()+"&count="+$('input[type=text][name=count]').val(),
+$(document).on('click','#submitBtn',function(){
+    window.location.href="View/"+$('#options').val()
+});
+
+$(document).on('click','#Request',function(){
+    var query = $('input[type=text][name=query]').val();
+    var tag = $('input[type=text][name=tag]').val();
+$.ajax({
+        url: "http://localhost:8080/sendRequest",
         type: "post",
-        data: JSON.stringify({key: $('input[type=text][name=keyword]').val(), count: $('input[type=text][name=count]')}),
+        contentType: "application/json; charset=utf-8",
+        crossDomain:true,
+        dataType:'json',
+        data: JSON.stringify({query: query, tag: tag}),
         success: function(result){
-            alert(result);
-            $.ajax({
-                url: "http://localhost:8080/sendGetter?",
-                type: "post",
-                data: JSON.stringify({key: $('#select').val()}),
-                success: function(resultArray){
-                    var html = '<tr><th>Index</th><th>User Name</th><th>Location</th><th>Language</th><th>Post</th></tr>';
-                    for(var i = 0; i < resultArray.length; i++){
-                        html+='<tr><td>'+resultArray[i]['user_index']+'</td><td>'+resultArray[i]['user_name']+"</td><td>"+resultArray[i]['location']+"</td><td>"+resultArray[i]['language']+"</td><td>"+resultArray[i]['post']+"</td></tr>";
-                    };
-                    $('#posts').html(html);
-                }
-            });
+            alert(result.msg);
+            alert("Your query  id is: "+result.query_id);
+        },
+        error: function(err){
+            console.log(err);
         }
-    });
+    })
+});
+
+$(document).on('click','#Retrieve',function(){
+    var query = $('input[type=text][name=query]').val();
+    var tag = $('input[type=text][name=tag]').val();
+    var id = $('input[type=text][name=id]').val();
+    $.ajax({
+        url: "http://localhost:8080/sendRetrieve",
+        type: "post",
+        contentType: "application/json; charset=utf-8",
+        crossDomain:true,
+        dataType:'json',
+        data: JSON.stringify({query: query, tag: tag, id: id}),
+        success: function(resultArray){
+            var html = '<tr><th>Index</th><th>Query-ID</th><th>Query/Handle/Tag</th><th>Username</th><th>User handle</th><th>Post</th><th>Lang</th><th>Post Link</th></tr>';
+            for(var i = 0; i < resultArray.length; i++){
+                let index=i+1;
+                html+="<tr><td>"+index+"</td><td>"+resultArray[i]['query_id']+"</td><td>"+resultArray[i]['trackables']+"</td><td>"+resultArray[i]['user_name']+"</td><td>"+resultArray[i]['user_handle']+"</td><td>"+resultArray[i]['post']+"</td><td>"+resultArray[i]['language']+"</td><td>"+resultArray[i]['twitterLink']+"</td></tr>";
+            };
+            $('#searchPosts').html(html);
+        }
+    })
 });

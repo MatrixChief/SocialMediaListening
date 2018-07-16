@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <title>SocialMediaListener</title>
+        <script src="../Public/myScript.js"></script>
+        <style>
+            table{
+                border-collapse: collapse;
+            }
+            td{
+                padding: 4px;
+            }
+            table, th, td{
+                border: 1px solid black;
+
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Welcome to the Twitter Storage page!</h1>
+        <label>Enter query/handle, tag or both:</label>
+        <br>
+        <br>
+        <div>
+            <label>Query/handle:</label>
+            <input type="text" name="query" placeholder="eg Bupa Arabia" value="" required>
+        </div>
+
+        <div>
+            <label>Tag:</label>
+            <input type="text" name="tag" value="">
+        </div>
+
+        <br>
+        <button id="Request">Submit</button>
+    </body>
+</html>

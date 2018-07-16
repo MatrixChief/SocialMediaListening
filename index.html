@@ -4,34 +4,18 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <title>SocialMediaListener</title>
         <script src="./Public/myScript.js"></script>
-        <style>
-            table{
-                border-collapse: collapse;
-            }
-            td{
-                padding: 4px;
-            }
-            table, th, td{
-                border: 1px solid black;
-
-            }
-        </style>
     </head>
 
     <body>
         <h1>Welcome to the Twitter Storage page!</h1>
-        <label>Enter keyword to help our search engine:</label>
+        <label>Choose if you want a stream or a search:</label>
         <br>
-        <input type="text" name="keyword" placeholder="eg footall" required>
+        <select id="options">
+            <option value="Request">Request Parameters</option>
+            <option value="Retrieve">Retrieve Posts</option>
+        </select>
         <br>
-        <label>Eneter tweet count:</label>
         <br>
-        <input type="text" name="count" value="1" required>
-        <br>
-        <br>
-        <button id="submitBtnT">Submit</button>
-        <table id="posts">
-
-        </table>
+        <button id="submitBtn">Submit</button>
     </body>
 </html>
